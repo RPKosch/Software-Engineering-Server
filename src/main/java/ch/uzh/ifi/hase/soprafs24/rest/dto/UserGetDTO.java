@@ -8,6 +8,16 @@ public class UserGetDTO {
   private String name;
   private String username;
   private UserStatus status;
+  private String entrydate;
+  private String birthday;
+
+  public void setEntrydate(String entrydate){ this.entrydate = entrydate; }
+
+  public String getEntrydate(){return entrydate;}
+
+  public void setBirthday(String birthday){this.birthday = birthday;}
+
+  public String getBirthday(){return birthday;}
 
   public Long getId() {
     return id;
