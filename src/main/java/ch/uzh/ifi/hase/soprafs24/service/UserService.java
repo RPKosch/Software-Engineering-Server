@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -52,6 +53,11 @@ public class UserService {
         checkIfUserExists(newUser);
         // saves the given entity but data is only persisted in the database once
         // flush() is called
+        LocalDate currentDate = LocalDate.now();
+        // Format the date as 'dd.MM.yyyy'
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String formattedDate = currentDate.format(formatter);
+        newUser.setEntrydate(formattedDate);
         newUser = userRepository.save(newUser);
         userRepository.flush();
 
@@ -104,7 +110,6 @@ public class UserService {
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
         //Optional<User> userById = userRepository.findById(userToBeCreated.getId());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
