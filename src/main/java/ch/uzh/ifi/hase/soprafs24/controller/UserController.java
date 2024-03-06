@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,13 +92,14 @@ public class UserController {
   @PostMapping("/users")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
+  public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
     // create user
     User createdUser = userService.createUser(userInput);
     // convert internal representation of user back to API
+    response.addHeader("Authorization", createdUser.getToken());
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
@@ -105,10 +107,11 @@ public class UserController {
   @PostMapping("/users/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public UserGetDTO loginUser(@RequestBody UserPostDTO userPostDTO) {
+  public UserGetDTO loginUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
       User userlogin = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
       // convert API user to internal representation
       User loginUser = userService.loginUser(userlogin);
+      response.addHeader("Authorization", loginUser.getToken());
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loginUser);
       // create user
 
