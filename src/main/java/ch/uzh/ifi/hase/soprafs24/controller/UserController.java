@@ -51,13 +51,13 @@ public class UserController {
   public UserGetDTO getUserById(@PathVariable Long id) {
       // fetch user by ID from the internal representation
       User user = userService.getUsersById(id)
-              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));;
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));;
 
       // convert the user to the API representation
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
   }
   @PutMapping("/users/{id}")
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   @ResponseBody
   public UserGetDTO updateUser(@PathVariable Long id, @RequestBody UserPutDTO userPutDTO) {
       // Ensure the provided ID matches the path variable
@@ -67,7 +67,7 @@ public class UserController {
 
       // Fetch the existing user
       User existingUser = userService.getUsersById(id)
-              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));
 
       // Update the user with the new data
       userService.updateUser(existingUser, userPutDTO);

@@ -2,25 +2,27 @@ package ch.uzh.ifi.hase.soprafs24.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 
+import java.time.LocalDate;
+
 public class UserPostDTO {
 
   private String name;
 
   private String username;
 
-  private String entrydate;
+  private LocalDate entrydate;
 
-  private String birthday;
+  private LocalDate birthday;
 
   private UserStatus status;
 
-  public void setEntrydate(String entrydate){ this.entrydate = entrydate; }
+  public void setEntrydate(LocalDate entrydate){ this.entrydate = entrydate; }
 
-  public String getEntrydate(){return entrydate;}
+  public LocalDate getEntrydate(){return entrydate;}
 
-  public void setBirthday(String birthday){this.birthday = birthday;}
+  public void setBirthday(LocalDate birthday){this.birthday = birthday;}
 
-  public String getBirthday(){return birthday;}
+  public LocalDate getBirthday(){return birthday;}
 
   public String getName() {
     return name;
@@ -40,8 +42,7 @@ public class UserPostDTO {
   public UserStatus getStatus() {
         return status;
     }
-
-    public void setStatus(UserStatus status) {
+  public void setStatus(UserStatus status) {
         this.status = status;
     }
 

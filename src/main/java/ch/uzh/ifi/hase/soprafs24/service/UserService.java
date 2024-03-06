@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +56,7 @@ public class UserService {
         // saves the given entity but data is only persisted in the database once
         // flush() is called
         LocalDate currentDate = LocalDate.now();
-        // Format the date as 'dd.MM.yyyy'
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String formattedDate = currentDate.format(formatter);
-        newUser.setEntrydate(formattedDate);
+        newUser.setEntrydate(currentDate);
         newUser = userRepository.save(newUser);
         userRepository.flush();
 
@@ -77,7 +76,8 @@ public class UserService {
             userRepository.flush();
             return loginusersaved;
         }
-        return null;
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                String.format("Your Login is incorrect. Please try again!"));
     }
 
     public User logoutUser(User logoutUser){
@@ -89,15 +89,12 @@ public class UserService {
     }
 
     public void updateUser(User existingUser, UserPutDTO userPutDTO) {
-        // Update the user properties with values from the DTO
-        existingUser.setName(userPutDTO.getName());
+        checkifDateInputisvalidandUpdate(existingUser,userPutDTO);
+        checkifUserCanBeUpdated(existingUser, userPutDTO);
         existingUser.setUsername(userPutDTO.getUsername());
-        existingUser.setStatus(userPutDTO.getStatus());
-        existingUser.setBirthday(userPutDTO.getBirthday());
-        existingUser.setEntrydate(userPutDTO.getEntrydate());
         userRepository.save(existingUser);
-    }
 
+    }
     /**
      * This is a helper method that will check the uniqueness criteria of the
      * username and the name
@@ -113,19 +110,50 @@ public class UserService {
         //Optional<User> userById = userRepository.findById(userToBeCreated.getId());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+        String UserorPasswordnullMessage = "This User is invalid due to Non Inputs for Username or Password.";
         if (userByUsername != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
 
         }
+        else if(userToBeCreated.getName().equals("") || userToBeCreated.getUsername().equals("")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format(UserorPasswordnullMessage));
+        }
     }
-    private void checkIfUserInDatabase(User userInDatabase) {
 
+    private void checkifUserCanBeUpdated(User existingUser, UserPutDTO userPutDTO){
+        if(!existingUser.getUsername().equals(userPutDTO.getUsername())){
+            User userByUsername = userRepository.findByUsername(userPutDTO.getUsername());
+            String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be updated!";
+            String UserorPasswordnullMessage = "This User is invalid due to Non Inputs for Username";
+            if (userByUsername != null) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
+            }
+            else if(userPutDTO.getUsername().equals("")) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, String.format(UserorPasswordnullMessage));
+            }
+        }
+    }
+
+    private void checkifDateInputisvalidandUpdate(User existingUser,UserPutDTO userPutDTO){
+        try {
+            if(userPutDTO.getBirthday() == null){
+                return;
+            }
+            String dateString = userPutDTO.getBirthday();
+            // Define the expected date format
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+            // Parse the input string
+            LocalDate parsedDate = LocalDate.parse(dateString, formatter);
+            existingUser.setBirthday(parsedDate);
+            userRepository.save(existingUser);
+        } catch (DateTimeParseException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+                    String.format("Your Birthday Format is incorrect. Format Spesification: yyyy-mm-dd"));
+        }
+    }
+
+    private void checkIfUserInDatabase(User userInDatabase) {
         User userByUsername = userRepository.findByUsername(userInDatabase.getUsername());
-        //Optional<User> userById = userRepository.findById(userToBeCreated.getId());
-/*        if (userByUsername == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                    String.format("Your Login is incorrect. Please try again!"));
-        }*/
         if (userByUsername == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("Your Login is incorrect. Please try again!"));
