@@ -43,6 +43,10 @@ public class UserController {
     for (User user : users) {
       userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
     }
+    if(userGetDTOs.isEmpty()){
+        throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                String.format("This is not valid because there is no Content to see!"));
+    }
     return userGetDTOs;
   }
 
