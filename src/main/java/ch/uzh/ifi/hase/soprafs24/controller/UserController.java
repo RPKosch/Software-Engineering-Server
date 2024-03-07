@@ -1,5 +1,4 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
-
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetLoginDTO;
@@ -7,7 +6,9 @@ import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
@@ -26,12 +27,11 @@ import java.util.List;
  */
 @RestController
 public class UserController {
-
+  @Autowired
   private final UserService userService;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-
-    UserController(UserService userService) {
+  UserController(UserService userService) {
     this.userService = userService;
   }
 
@@ -103,7 +103,7 @@ public class UserController {
   //@ResponseStatus(HttpStatus.CREATED)
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public UserGetLoginDTO createUser(@RequestBody UserPostDTO userPostDTO) {
+  public ResponseEntity<UserGetLoginDTO> createUser(@RequestBody UserPostDTO userPostDTO) {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
@@ -112,7 +112,8 @@ public class UserController {
     // convert internal representation of user back to API
     // , HttpServletResponse response
     //response.addHeader("authorization", createdUser.getToken());
-    return DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(createdUser);
+    UserGetLoginDTO finaluser = DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(createdUser);
+    return ResponseEntity.ok(finaluser);
   }
 
   // New Commit and push
