@@ -28,6 +28,7 @@ import java.util.UUID;
  * (e.g., it creates, modifies, deletes, finds). The result will be passed back
  * to the caller.
  */
+
 @Service
 @Transactional
 public class UserService {
@@ -67,7 +68,7 @@ public class UserService {
     public User loginUser(User loginuser) {
         // saves the given entity but data is only persisted in the database once
         // flush() is called
-        checkIfUserInDatabase(loginuser);
+    //    checkIfUserInDatabase(loginuser);
         User official_user = userRepository.findByUsername(loginuser.getUsername());
         official_user.setToken(UUID.randomUUID().toString());
         official_user.setStatus(UserStatus.ONLINE);
@@ -87,6 +88,22 @@ public class UserService {
 
         //userRepository.flush()
     }
+
+
+
+/*    public User createUser(User newUser) {
+        newUser.setToken(UUID.randomUUID().toString());
+        newUser.setStatus(UserStatus.ONLINE);
+        newUser.setEntrydate(LocalDate.now());
+        checkIfUserExists(newUser);
+        // saves the given entity but data is only persisted in the database once
+        // flush() is called
+        newUser = userRepository.save(newUser);
+        userRepository.flush();
+
+        log.debug("Created Information for User: {}", newUser);
+        return newUser;
+    }*/
 
     public User updateUser(User existingUser, UserPutDTO userPutDTO) {
         checkifDateInputisvalidandUpdate(existingUser,userPutDTO);
