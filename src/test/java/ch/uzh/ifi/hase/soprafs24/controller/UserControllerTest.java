@@ -125,7 +125,7 @@ public class UserControllerTest {
 
         // then
       mockMvc.perform(getRequest)
-              .andExpect(status().isNoContent())
+              .andExpect(status().isOk())
               .andExpect(jsonPath("$.id", is(user.getId().intValue())))
               .andExpect(jsonPath("$.username", is(user.getUsername())))
               .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
