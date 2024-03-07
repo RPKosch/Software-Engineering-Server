@@ -88,12 +88,12 @@ public class UserService {
         //userRepository.flush()
     }
 
-    public void updateUser(User existingUser, UserPutDTO userPutDTO) {
+    public User updateUser(User existingUser, UserPutDTO userPutDTO) {
         checkifDateInputisvalidandUpdate(existingUser,userPutDTO);
         checkifUserCanBeUpdated(existingUser, userPutDTO);
         existingUser.setUsername(userPutDTO.getUsername());
         userRepository.save(existingUser);
-
+        return existingUser;
     }
     /**
      * This is a helper method that will check the uniqueness criteria of the

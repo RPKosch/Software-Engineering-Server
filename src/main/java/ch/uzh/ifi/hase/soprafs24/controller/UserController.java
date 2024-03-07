@@ -81,10 +81,10 @@ public class UserController {
               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));
 
       // Update the user with the new data
-      userService.updateUser(existingUser, userPutDTO);
+      User UpdatedUser = userService.updateUser(existingUser, userPutDTO);
 
       // Return the updated user
-      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(existingUser);
+      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(UpdatedUser);
   }
 
   @PostMapping("/userslogout/{id}")
@@ -103,14 +103,15 @@ public class UserController {
   //@ResponseStatus(HttpStatus.CREATED)
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public UserGetLoginDTO createUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
+  public UserGetLoginDTO createUser(@RequestBody UserPostDTO userPostDTO) {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
     // create user
     User createdUser = userService.createUser(userInput);
     // convert internal representation of user back to API
-    response.addHeader("authorization", createdUser.getToken());
+    // , HttpServletResponse response
+    //response.addHeader("authorization", createdUser.getToken());
     return DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(createdUser);
   }
 
@@ -118,12 +119,13 @@ public class UserController {
   @PostMapping("/users/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public UserGetLoginDTO loginUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
+  public UserGetLoginDTO loginUser(@RequestBody UserPostDTO userPostDTO) {
       User userlogin = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
       // convert API user to internal representation
       User loginUser = userService.loginUser(userlogin);
 
       // 1. Solution: Header Token wont work - No idea why.
+      // , HttpServletResponse response
       //response.addHeader("Authorization", loginUser.getToken());
       //return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loginUser);
 
