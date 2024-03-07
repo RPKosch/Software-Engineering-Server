@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetLoginDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
@@ -13,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * User Controller
@@ -90,33 +90,36 @@ public class UserController {
 
 
   @PostMapping("/users")
+  //@ResponseStatus(HttpStatus.CREATED)
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
+  public UserGetLoginDTO createUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
     // create user
     User createdUser = userService.createUser(userInput);
     // convert internal representation of user back to API
-    response.addHeader("Authorization", createdUser.getToken());
-    return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+    response.addHeader("authorization", createdUser.getToken());
+    return DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(createdUser);
   }
 
   // New Commit and push
   @PostMapping("/users/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public UserGetDTO loginUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
+  public UserGetLoginDTO loginUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response) {
       User userlogin = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
       // convert API user to internal representation
       User loginUser = userService.loginUser(userlogin);
-      response.addHeader("Authorization", loginUser.getToken());
-      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loginUser);
-      // create user
+
+      // 1. Solution: Header Token wont work - No idea why.
+      //response.addHeader("Authorization", loginUser.getToken());
+      //return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loginUser);
+
 
       // convert internal representation of user back to API
 
-      //return DTOMapper.INSTANCE.convertEntityToUserGetDTO(loginUser);
+      return DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(loginUser);
   }
 }
