@@ -27,7 +27,6 @@ import java.util.List;
  */
 @RestController
 public class UserController {
-  @Autowired
   private final UserService userService;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -99,11 +98,11 @@ public class UserController {
     }
 
 
-/*  @PostMapping("/users")
+  @PostMapping("/users")
   //@ResponseStatus(HttpStatus.CREATED)
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public ResponseEntity<UserGetLoginDTO> createUser(@RequestBody UserPostDTO userPostDTO) {
+  public UserGetLoginDTO createUser(@RequestBody UserPostDTO userPostDTO) {
     // convert API user to internal representation
     User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
@@ -113,21 +112,8 @@ public class UserController {
     // , HttpServletResponse response
     //response.addHeader("authorization", createdUser.getToken());
     UserGetLoginDTO finaluser = DTOMapper.INSTANCE.convertEntityToUserGetLoginDTO(createdUser);
-    return ResponseEntity.ok(finaluser);
-  }*/
-//NIGLLO
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
-        // convert API user to internal representation
-        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-
-        // create user
-        User createdUser = userService.createUser(userInput);
-        // convert internal representation of user back to API
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
-    }
+    return finaluser;
+  }
 
   // New Commit and push
   @PostMapping("/users/login")

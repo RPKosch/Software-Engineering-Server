@@ -49,26 +49,10 @@ public class UserService {
     public Optional<User> getUsersById(Long id) {
         return userRepository.findById(id);
     }
-
-    public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.ONLINE);
-        checkIfUserExists(newUser);
-        // saves the given entity but data is only persisted in the database once
-        // flush() is called
-        LocalDate currentDate = LocalDate.now();
-        newUser.setEntrydate(currentDate);
-        newUser = userRepository.save(newUser);
-        userRepository.flush();
-
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
-    }
-
     public User loginUser(User loginuser) {
         // saves the given entity but data is only persisted in the database once
         // flush() is called
-    //    checkIfUserInDatabase(loginuser);
+        checkIfUserInDatabase(loginuser);
         User official_user = userRepository.findByUsername(loginuser.getUsername());
         official_user.setToken(UUID.randomUUID().toString());
         official_user.setStatus(UserStatus.ONLINE);
@@ -89,9 +73,7 @@ public class UserService {
         //userRepository.flush()
     }
 
-
-
-/*    public User createUser(User newUser) {
+    public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
         newUser.setEntrydate(LocalDate.now());
@@ -103,7 +85,7 @@ public class UserService {
 
         log.debug("Created Information for User: {}", newUser);
         return newUser;
-    }*/
+    }
 
     public User updateUser(User existingUser, UserPutDTO userPutDTO) {
         checkifDateInputisvalidandUpdate(existingUser,userPutDTO);
