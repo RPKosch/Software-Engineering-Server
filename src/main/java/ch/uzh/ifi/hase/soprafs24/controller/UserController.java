@@ -10,6 +10,8 @@ import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -26,8 +28,10 @@ import java.util.List;
 public class UserController {
 
   private final UserService userService;
+  private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-  UserController(UserService userService) {
+
+    UserController(UserService userService) {
     this.userService = userService;
   }
 
@@ -43,8 +47,10 @@ public class UserController {
     for (User user : users) {
       userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
     }
+    log.info("THIS IS USERS: {}", userGetDTOs);
+
     if(userGetDTOs.isEmpty()){
-        throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                 String.format("This is not valid because there is no Content to see!"));
     }
     return userGetDTOs;
