@@ -5,7 +5,6 @@ import java.time.format.DateTimeParseException;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPutDTO;
-import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +92,16 @@ public class UserService {
         userRepository.save(existingUser);
         return existingUser;
     }
+
+    public User checkauthentification_and_if_user_exists(String token, Long id){
+        User existingUser = getUsersById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));
+        String correcttoken = existingUser.getToken();
+        if(!token.equals(correcttoken)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not alowed to perform this Operation!");
+        }
+        return existingUser;
+    }
     /**
      * This is a helper method that will check the uniqueness criteria of the
      * username and the name
@@ -158,7 +166,5 @@ public class UserService {
                     String.format("Your Login is incorrect. Please try again!"));
         }
     }
-
-
 
 }

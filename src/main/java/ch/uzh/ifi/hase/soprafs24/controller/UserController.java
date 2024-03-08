@@ -69,18 +69,25 @@ public class UserController {
   @PutMapping("/users/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @ResponseBody
-  public UserGetDTO updateUser(@PathVariable Long id, @RequestBody UserPutDTO userPutDTO) {
+  public UserGetDTO updateUser(@PathVariable Long id, @RequestBody UserPutDTO userPutDTO){
+      //This Authentifaction does also not work. i do not get the key in my backend
+      //@RequestHeader(name = "authorization", defaultValue = "") String token){
+      //log.info("THIS IS PUT TOKEN: {}", token);
+      
+      // Fetch the existing user or give back an error if user does not exist
+      // Also check Authentification
+      //User ExistingUser = userService.checkauthentification_and_if_user_exists(token, id);
+
       // Ensure the provided ID matches the path variable
       if (!userPutDTO.getId().equals(id)) {
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mismatched user ID in path and request body");
       }
 
-      // Fetch the existing user
-      User existingUser = userService.getUsersById(id)
+      User ExistingUser = userService.getUsersById(id)
               .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));
 
       // Update the user with the new data
-      User UpdatedUser = userService.updateUser(existingUser, userPutDTO);
+      User UpdatedUser = userService.updateUser(ExistingUser, userPutDTO);
 
       // Return the updated user
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(UpdatedUser);
