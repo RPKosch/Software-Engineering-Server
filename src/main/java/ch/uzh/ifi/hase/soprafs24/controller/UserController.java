@@ -73,7 +73,7 @@ public class UserController {
       //This Authentifaction does also not work. i do not get the key in my backend
       //@RequestHeader(name = "authorization", defaultValue = "") String token){
       //log.info("THIS IS PUT TOKEN: {}", token);
-      
+
       // Fetch the existing user or give back an error if user does not exist
       // Also check Authentification
       //User ExistingUser = userService.checkauthentification_and_if_user_exists(token, id);
